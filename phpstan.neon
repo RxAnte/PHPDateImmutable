@@ -1,0 +1,14 @@
+parameters:
+    paths:
+        - src
+        - tests
+    level: max
+    treatPhpDocTypesAsCertain: false
+    ignoreErrors:
+        - "#^Access to an undefined property Pest\\\\Mixins\\\\Expectation\\<string\\|null\\>\\:\\:\\$not\\.$#"
+    excludes_analyse:
+
+includes:
+    - vendor/phpstan/phpstan-mockery/extension.neon
+    - vendor/phpstan/phpstan-deprecation-rules/rules.neon
+    - vendor/phpstan/phpstan-strict-rules/rules.neon

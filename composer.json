@@ -1,0 +1,30 @@
+{
+    "name": "rxante/dateimmutable",
+    "license": "Apache-2.0",
+    "require": {
+        "php": "^8.0"
+    },
+    "require-dev": {
+        "doctrine/coding-standard": "^12.0.0",
+        "mockery/mockery": "^1.6.12",
+        "pestphp/pest": "^2.26",
+        "phpstan/phpstan": "^1.10",
+        "phpstan/phpstan-deprecation-rules": "^1.1",
+        "phpstan/phpstan-mockery": "^1.1",
+        "phpstan/phpstan-strict-rules": "^1.5",
+        "squizlabs/php_codesniffer": "^3.7"
+    },
+    "autoload": {
+        "psr-4": {
+            "RxAnte\\": "src"
+        }
+    },
+    "config": {
+        "bin-compat": "full",
+        "sort-packages": true,
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "pestphp/pest-plugin": true
+        }
+    }
+}
