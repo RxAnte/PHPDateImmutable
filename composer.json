@@ -2,7 +2,7 @@
     "name": "rxante/dateimmutable",
     "license": "Apache-2.0",
     "require": {
-        "php": "^8.0"
+        "php": "^8.2"
     },
     "require-dev": {
         "doctrine/coding-standard": "^12.0.0",
