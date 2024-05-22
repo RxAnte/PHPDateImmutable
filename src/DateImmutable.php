@@ -41,10 +41,14 @@ readonly class DateImmutable
         return $this->dateTime->__serialize();
     }
 
-    /** @phpstan-ignore-next-line */
+    /**
+     * @throws Exception
+     *
+     * @phpstan-ignore-next-line
+     */
     public function __unserialize(array $data): void
     {
-        $this->dateTime->__unserialize($data);
+        $this->__construct($data['date']);
     }
 
     public function __wakeup(): void
@@ -56,13 +60,6 @@ readonly class DateImmutable
      * Returns the difference between two Date objects
      *
      * @link https://secure.php.net/manual/en/datetime.diff.php
-     *
-     * @param DateTimeInterface $targetObject The date to compare to.
-     * @param bool              $absolute     Should the interval be forced to
-     * be positive?
-     *
-     * @return DateInterval The https://secure.php.net/manual/en/class.dateinterval.php
-     * DateInterval object representing the difference between the two dates.
      */
     public function diff(
         DateTimeInterface|DateImmutable $targetObject,
