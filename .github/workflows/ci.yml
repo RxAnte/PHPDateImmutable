@@ -1,8 +1,29 @@
 name: CI
 on: [push]
 jobs:
-  code-quality:
-    name: Code Quality
+  code-quality-php83:
+    name: Code Quality (PHP 8.3)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer:v2
+          coverage: xdebug
+          extensions: oauth, pdo, redis, xdebug
+      - name: Install composer dependencies
+        run: composer install
+      - name: Run PHPCS
+        run: php -d memory_limit=4G ./vendor/bin/phpcs --no-cache --no-colors
+      - name: Run PHPStan
+        run: php -d memory_limit=4G ./vendor/bin/phpstan analyse --no-interaction --no-progress
+      - name: Run Pest
+        run: php -d memory_limit=4G ./vendor/bin/pest --fail-on-warning
+  code-quality-php82:
+    name: Code Quality (PHP 8.2)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
