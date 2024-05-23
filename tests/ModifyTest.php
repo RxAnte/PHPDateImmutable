@@ -22,3 +22,22 @@ test(
             ->toBe('1982-01-28');
     },
 );
+
+test(
+    'Modify returns false on erroneous argument',
+    function (): void {
+        $date = new DateImmutable('1982-01-27');
+
+        $exception = null;
+
+        try {
+            $date->modify('asdf');
+        } catch (DateMalformedStringException $e) {
+            $exception = $e;
+        }
+
+        expect($exception)->toBeInstanceOf(
+            DateMalformedStringException::class,
+        );
+    }
+);

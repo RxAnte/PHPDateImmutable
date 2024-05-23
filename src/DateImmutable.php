@@ -4,14 +4,26 @@ declare(strict_types=1);
 
 namespace RxAnte;
 
+use DateException;
 use DateInterval;
+use DateMalformedStringException;
 use DateTimeImmutable;
 use DateTimeInterface;
 use DateTimeZone;
 use Exception;
 
+use function implode;
+use function is_array;
+use function mb_strpos;
+use function restore_error_handler;
+use function set_error_handler;
+use function version_compare;
+
+use const PHP_VERSION;
+
 // phpcs:disable SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingTraversableTypeHintSpecification
 // phpcs:disable SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingTraversableTypeHintSpecification
+// phpcs:disable SlevomatCodingStandard.Functions.StaticClosure.ClosureNotStatic
 
 readonly class DateImmutable
 {
@@ -114,7 +126,7 @@ readonly class DateImmutable
     public static function createFromFormat(
         string $format,
         string $datetime,
-    ): DateImmutable|false {
+    ): DateImmutable {
         $dateTime = DateTimeImmutable::createFromFormat(
             $format,
             $datetime,
@@ -122,7 +134,14 @@ readonly class DateImmutable
         );
 
         if ($dateTime === false) {
-            return false;
+            $lastErrors = DateTimeImmutable::getLastErrors();
+            $lastErrors = is_array($lastErrors) ? $lastErrors : [];
+            $errors     = $lastErrors['errors'] ?? [];
+
+            throw new DateException(implode(
+                '. ',
+                $errors,
+            ));
         }
 
         return new DateImmutable(
@@ -135,16 +154,55 @@ readonly class DateImmutable
      * in {@link https://secure.php.net/manual/en/datetime.formats.php Date and
      * Time Formats}.
      *
-     * @return DateImmutable|false Returns the newly created object or false on failure.
-     *
-     * @throws Exception
+     * @throws DateMalformedStringException
      */
-    public function modify(string $modifier): DateImmutable|false
+    public function modify(string $modifier): DateImmutable
     {
+        $oldErrorHandler = null;
+
+        // For PHP 8.2's terrible handling of emitting warnings
+        if (
+            version_compare(
+                PHP_VERSION,
+                '8.3.0',
+                '<',
+            )
+        ) {
+            $oldErrorHandler = set_error_handler(
+                function (
+                    int $code,
+                    string $msg,
+                    string $file,
+                    int $line,
+                ) use (&$oldErrorHandler): bool {
+                    $applicable = mb_strpos(
+                        $msg,
+                        'DateTimeImmutable::modify()',
+                    );
+
+                    if ($applicable !== false) {
+                        throw new DateMalformedStringException();
+                    }
+
+                    // @codeCoverageIgnoreStart
+
+                    /** @phpstan-ignore-next-line */
+                    return $oldErrorHandler($code, $msg, $file, $line);
+                    // @codeCoverageIgnoreEnd
+                },
+            );
+        }
+
         $newDateTime = $this->dateTime->modify($modifier);
 
-        if ($newDateTime === false) {
-            return false;
+        if (
+            version_compare(
+                PHP_VERSION,
+                '8.3.0',
+                '<',
+            )
+        ) {
+            restore_error_handler();
         }
 
         $newDateTime = $newDateTime->setTime(
@@ -153,6 +211,12 @@ readonly class DateImmutable
             0,
         );
 
+        /**
+         * We know this isn't going to throw because we know we have a valid
+         * DateTime at this point
+         *
+         * @noinspection PhpUnhandledExceptionInspection
+         */
         return new DateImmutable($newDateTime->format(
             self::CREATE_FORMAT,
         ));

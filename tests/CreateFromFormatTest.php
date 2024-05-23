@@ -21,3 +21,23 @@ test(
             ->toBe('1982-01-27');
     },
 );
+
+test(
+    'Create from format returns false on erroneous argument',
+    function (): void {
+        $exception = null;
+
+        try {
+            DateImmutable::createFromFormat(
+                'm/d/y',
+                'foo',
+            );
+        } catch (Throwable $e) {
+            $exception = $e;
+        }
+
+        expect($exception)->toBeInstanceOf(
+            DateException::class,
+        );
+    }
+);

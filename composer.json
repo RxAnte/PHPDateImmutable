@@ -19,7 +19,8 @@
         "psr-4": {
             "RxAnte\\": "src",
             "Tests\\": "tests"
-        }
+        },
+        "classmap": ["Polyfill"]
     },
     "config": {
         "bin-compat": "full",
