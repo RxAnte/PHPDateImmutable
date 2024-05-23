@@ -51,11 +51,6 @@ readonly class DateImmutable
         $this->__construct($data['date']);
     }
 
-    public function __wakeup(): void
-    {
-        $this->dateTime->__wakeup();
-    }
-
     /**
      * Returns the difference between two Date objects
      *
