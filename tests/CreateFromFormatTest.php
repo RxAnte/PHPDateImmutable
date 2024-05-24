@@ -13,11 +13,8 @@ test(
         );
 
         expect($date)
-            ->toBeInstanceOf(DateImmutable::class);
-
-        assert($date instanceof DateImmutable);
-
-        expect($date->format('Y-m-d'))
+            ->toBeInstanceOf(DateImmutable::class)
+            ->and($date->format('Y-m-d'))
             ->toBe('1982-01-27');
     },
 );
@@ -39,5 +36,5 @@ test(
         expect($exception)->toBeInstanceOf(
             DateException::class,
         );
-    }
+    },
 );
